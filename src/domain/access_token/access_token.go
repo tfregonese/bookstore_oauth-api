@@ -1,6 +1,10 @@
 package access_token
 
-import "time"
+import (
+	"github.com/tfregonese/bookstore_oauth-api/src/utils/errors"
+	"strings"
+	"time"
+)
 
 const expirationTime = 24
 
@@ -14,6 +18,23 @@ type AccessToken struct {
 //Different client_id, so you can do different things depending were the data is requested
 // WEB frontend -> ClientId: 123
 // Android API -> ClientId: 234
+
+func (at *AccessToken) Validate() *errors.RestErr {
+	at.AccessToken = strings.TrimSpace(at.AccessToken)
+	if len(at.AccessToken) == 0 {
+		return errors.NewBadRequestError("invalid AccessToken Id.")
+	}
+	if at.UserId <= 0 {
+		return errors.NewBadRequestError("invalid User Id.")
+	}
+	if at.ClientId <= 0 {
+		return errors.NewBadRequestError("invalid Client Id.")
+	}
+	if at.Expires <= 0 {
+		return errors.NewBadRequestError("invalid Expires.")
+	}
+	return nil
+}
 
 func GetNewAccessToken() AccessToken {
 	return AccessToken{
