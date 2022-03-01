@@ -6,7 +6,36 @@ import (
 	"time"
 )
 
-const expirationTime = 24
+const (
+	expirationTime             = 24
+	grandTypePassword          = "password"
+	grandTypeClientCredentials = "client_credentials"
+)
+
+type AccessTokenRequest struct {
+	GrandType string `json:"grand_type"`
+	Scope     string `json:"scope"`
+
+	//Used in password grand type
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+	//Used in client_credentials grand type
+	ClientId     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+}
+
+func (at *AccessTokenRequest) Validate() *errors.RestErr {
+	switch at.GrandType {
+	case grandTypePassword:
+		break
+	case grandTypeClientCredentials:
+		break
+	default:
+		return errors.NewBadRequestError("invalid Grand Type")
+	}
+	return nil
+}
 
 type AccessToken struct {
 	AccessToken string `json:"access_token"`
